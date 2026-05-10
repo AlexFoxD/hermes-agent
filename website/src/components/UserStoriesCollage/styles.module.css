@@ -135,6 +135,18 @@
   box-shadow: 0 10px 30px -12px rgba(120, 120, 200, 0.45);
 }
 
+/* Static tiles (use-case entries with no link) — keep visual style, drop the
+   clickable affordance: no lift on hover, no shadow, default cursor. */
+.tileStatic { cursor: default; }
+.tileStatic:hover {
+  transform: none;
+  border-color: var(--ifm-color-emphasis-200);
+  box-shadow: none;
+}
+[data-theme='dark'] .tileStatic:hover {
+  box-shadow: none;
+}
+
 /* Size variants — big tiles get more visual weight */
 .tileSm { min-height: 130px; }
 .tileMd { min-height: 180px; }

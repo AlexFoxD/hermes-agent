@@ -125,6 +125,7 @@ const SOURCE_LABELS: Record<string, string> = {
   linkedin: 'LinkedIn',
   gist: 'GitHub Gist',
   producthunt: 'Product Hunt',
+  'use-case': 'Use Case',
 };
 
 function sourceColor(source: string): string {
@@ -139,6 +140,7 @@ function sourceColor(source: string): string {
     case 'linkedin': return '#0a66c2';
     case 'gist': return '#8b949e';
     case 'producthunt': return '#da552f';
+    case 'use-case': return '#7c8da4';
     default: return '#64748b';
   }
 }
@@ -172,13 +174,16 @@ export default function UserStoriesCollage(): JSX.Element {
       <div className={styles.hero}>
         <h1>User Stories &amp; Use Cases</h1>
         <p>
-          What the Hermes Agent community is actually building. Every tile
-          below links to a real post, issue, video, or gist where someone
-          describes how they use Hermes &mdash; scraped from X, GitHub, Reddit,
-          Hacker News, YouTube, blogs, and podcasts.
+          What the Hermes Agent community is actually building, plus
+          patterns we&apos;ve seen recurring across deployments. Linkable
+          tiles point to a real post, issue, video, or gist on X, GitHub,
+          Reddit, Hacker News, YouTube, blogs, or podcasts. <em>Use Case</em>
+          tiles describe specific workflows that recur in the wild but
+          don&apos;t map to a single source &mdash; they&apos;re here to
+          help you spot what your own setup might look like.
         </p>
         <div className={styles.meta}>
-          <span><strong>{allStories.length}</strong> stories</span>
+          <span><strong>{allStories.length}</strong> entries</span>
           <span><strong>{Object.keys(categoryCounts).length}</strong> categories</span>
           <span><strong>{Object.keys(sourceCounts).length}</strong> sources</span>
         </div>
@@ -255,21 +260,14 @@ export default function UserStoriesCollage(): JSX.Element {
             const sizeClass =
               s.size === 'lg' ? styles.tileLg : s.size === 'sm' ? styles.tileSm : styles.tileMd;
             const srcColor = sourceColor(s.source);
-            return (
-              <a
-                key={s.id}
-                className={`${styles.tile} ${sizeClass}`}
-                href={s.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={
-                  {
-                    '--tile-accent': cat.strip,
-                    '--tile-accent-solid': cat.solid,
-                    '--tile-accent-soft': cat.soft,
-                  } as React.CSSProperties
-                }
-              >
+            const hasLink = !!s.url;
+            const tileStyle = {
+              '--tile-accent': cat.strip,
+              '--tile-accent-solid': cat.solid,
+              '--tile-accent-soft': cat.soft,
+            } as React.CSSProperties;
+            const inner = (
+              <>
                 <div className={styles.badgeRow}>
                   <span className={styles.sourceBadge}>
                     <span className={styles.sourceIcon} style={{ background: srcColor }} />
@@ -283,8 +281,30 @@ export default function UserStoriesCollage(): JSX.Element {
                   {s.author}
                   {s.date ? <> &middot; {s.date}</> : null}
                 </span>
-                <span className={styles.external} aria-hidden="true">↗</span>
+                {hasLink ? (
+                  <span className={styles.external} aria-hidden="true">↗</span>
+                ) : null}
+              </>
+            );
+            return hasLink ? (
+              <a
+                key={s.id}
+                className={`${styles.tile} ${sizeClass}`}
+                href={s.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={tileStyle}
+              >
+                {inner}
               </a>
+            ) : (
+              <div
+                key={s.id}
+                className={`${styles.tile} ${sizeClass} ${styles.tileStatic}`}
+                style={tileStyle}
+              >
+                {inner}
+              </div>
             );
           })}
         </div>
